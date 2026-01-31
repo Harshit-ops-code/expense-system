@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+venv/
+.venv/
+
+# SQLite
+*.db
+backend/expense_manager.db
+backend/instance/
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Env
+.env
+.env.local
+
+# Editor
+.vscode/
+.idea/
+
+# Misc
+.DS_Store
