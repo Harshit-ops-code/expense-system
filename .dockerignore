@@ -1,0 +1,11 @@
+backend/expense_manager.db
+backend/instance/
+frontend/node_modules
+frontend/dist
+.venv
+*.pyc
+__pycache__
+.env
+.env.*
+node_modules
+dist

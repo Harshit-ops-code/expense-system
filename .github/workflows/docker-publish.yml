@@ -1,0 +1,40 @@
+name: CI — Build and Publish Docker Images
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Build & push backend image
+        run: |
+          IMAGE=ghcr.io/${{ github.repository_owner }}/expense-system-backend
+          docker build --file backend/Dockerfile -t ${IMAGE}:${{ github.sha }} -t ${IMAGE}:latest .
+          docker push ${IMAGE}:${{ github.sha }}
+          docker push ${IMAGE}:latest
+
+      - name: Build & push frontend image
+        run: |
+          IMAGE=ghcr.io/${{ github.repository_owner }}/expense-system-frontend
+          docker build --file frontend/Dockerfile -t ${IMAGE}:${{ github.sha }} -t ${IMAGE}:latest .
+          docker push ${IMAGE}:${{ github.sha }}
+          docker push ${IMAGE}:latest
