@@ -112,15 +112,30 @@ See also: `TECHSTACK.md` for detailed tech choices and recommended versions.
 
 1. Replace image placeholders in `k8s/*-deployment.yaml` with your image path (GHCR or Docker Hub).
 2. Create a secret for `SECRET_KEY`:
+
 ```bash
 kubectl create secret generic expense-secrets --from-literal=SECRET_KEY='replace-with-secret'
 ```
+
 3. Apply manifests:
+
 ```bash
 kubectl apply -f k8s/
 ```
+
 4. Get the frontend external IP (may take a minute):
+
 ```bash
 kubectl get svc expense-frontend
 ```
 
+## Continuous deployment to Cloud Run (one-click when secrets are set)
+
+I added a GitHub Actions workflow `.github/workflows/deploy-cloudrun.yml` that will build and push container images to Google Container Registry (GCR) and deploy them to Cloud Run when you push to `main`.
+
+Required repository secrets (set these in GitHub Settings -> Secrets):
+- `GCP_SA_KEY`: JSON service account key with roles `roles/run.admin`, `roles/storage.admin`, `roles/iam.serviceAccountUser` (base64 or raw JSON)
+- `GCP_PROJECT`: your GCP project id
+- `GCP_REGION`: Cloud Run region (e.g. `us-central1`)
+
+After adding those secrets, pushing to `main` will automatically deploy both services to Cloud Run. Logs and status are available in the Actions tab.

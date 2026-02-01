@@ -1,0 +1,55 @@
+name: Deploy to Google Cloud Run
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT }}
+
+      - name: Build and push backend image
+        run: |
+          IMAGE=gcr.io/${{ secrets.GCP_PROJECT }}/expense-system-backend
+          docker build -f backend/Dockerfile -t ${IMAGE}:${GITHUB_SHA} .
+          docker push ${IMAGE}:${GITHUB_SHA}
+          docker tag ${IMAGE}:${GITHUB_SHA} ${IMAGE}:latest
+          docker push ${IMAGE}:latest
+
+      - name: Deploy backend to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v1
+        with:
+          service: expense-backend
+          image: gcr.io/${{ secrets.GCP_PROJECT }}/expense-system-backend:${GITHUB_SHA}
+          region: ${{ secrets.GCP_REGION }}
+          allow-unauthenticated: true
+
+      - name: Build and push frontend image
+        run: |
+          IMAGE=gcr.io/${{ secrets.GCP_PROJECT }}/expense-system-frontend
+          docker build -f frontend/Dockerfile -t ${IMAGE}:${GITHUB_SHA} .
+          docker push ${IMAGE}:${GITHUB_SHA}
+          docker tag ${IMAGE}:${GITHUB_SHA} ${IMAGE}:latest
+          docker push ${IMAGE}:latest
+
+      - name: Deploy frontend to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v1
+        with:
+          service: expense-frontend
+          image: gcr.io/${{ secrets.GCP_PROJECT }}/expense-system-frontend:${GITHUB_SHA}
+          region: ${{ secrets.GCP_REGION }}
+          allow-unauthenticated: true
