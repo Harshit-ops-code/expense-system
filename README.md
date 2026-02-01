@@ -99,6 +99,8 @@ npm run dev
 - `.env.example` — example environment variables
 - `.github/workflows/docker-publish.yml` — CI workflow to build & publish images
 
+See also: `TECHSTACK.md` for detailed tech choices and recommended versions.
+
 ## Runbook: Quick checklist for production rollout
 
 - Replace `SECRET_KEY` with a secure value in production env.
