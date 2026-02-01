@@ -107,3 +107,20 @@ See also: `TECHSTACK.md` for detailed tech choices and recommended versions.
 - Set `DATABASE_URL` to a managed database (Postgres recommended).
 - Use HTTPS at the frontend; configure reverse proxy or CDN.
 - Add monitoring, log aggregation, and backups for DB.
+
+## Kubernetes quick start
+
+1. Replace image placeholders in `k8s/*-deployment.yaml` with your image path (GHCR or Docker Hub).
+2. Create a secret for `SECRET_KEY`:
+```bash
+kubectl create secret generic expense-secrets --from-literal=SECRET_KEY='replace-with-secret'
+```
+3. Apply manifests:
+```bash
+kubectl apply -f k8s/
+```
+4. Get the frontend external IP (may take a minute):
+```bash
+kubectl get svc expense-frontend
+```
+

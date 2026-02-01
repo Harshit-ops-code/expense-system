@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: expense-backend
+spec:
+  selector:
+    app: expense-backend
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+  type: ClusterIP

@@ -1,0 +1,41 @@
+name: CI — Build and Publish Docker Hub Images
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  build-and-push-dockerhub:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Hub
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+
+      - name: Build & push backend image
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        run: |
+          IMAGE=${DOCKERHUB_USERNAME}/expense-system-backend
+          docker build --file backend/Dockerfile -t ${IMAGE}:${{ github.sha }} -t ${IMAGE}:latest .
+          docker push ${IMAGE}:${{ github.sha }}
+          docker push ${IMAGE}:latest
+
+      - name: Build & push frontend image
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        run: |
+          IMAGE=${DOCKERHUB_USERNAME}/expense-system-frontend
+          docker build --file frontend/Dockerfile -t ${IMAGE}:${{ github.sha }} -t ${IMAGE}:latest .
+          docker push ${IMAGE}:${{ github.sha }}
+          docker push ${IMAGE}:latest

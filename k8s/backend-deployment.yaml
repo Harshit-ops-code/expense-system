@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expense-backend
+  labels:
+    app: expense-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expense-backend
+  template:
+    metadata:
+      labels:
+        app: expense-backend
+    spec:
+      containers:
+        - name: backend
+          # Replace IMAGE with your registry image (GHCR / Docker Hub)
+          image: ghcr.io/REPLACE_OWNER/expense-system-backend:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: DATABASE_URL
+              value: "sqlite:////data/expense_manager.db"
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: expense-secrets
+                  key: SECRET_KEY
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          emptyDir: {}

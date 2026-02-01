@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expense-frontend
+  labels:
+    app: expense-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expense-frontend
+  template:
+    metadata:
+      labels:
+        app: expense-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: ghcr.io/REPLACE_OWNER/expense-system-frontend:latest
+          ports:
+            - containerPort: 80
