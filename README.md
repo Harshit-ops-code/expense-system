@@ -53,6 +53,16 @@ npm run dev
 
 - No extra secrets are required to publish to GHCR from the same repository; the workflow uses `GITHUB_TOKEN` with `packages: write` permission.
 
+### Release builds (tagged releases)
+
+When you create and publish a GitHub Release (for example tag `v1.0.0`), the repository runs the `release-publish.yml` workflow which:
+
+- Builds backend and frontend images using the release tag and also tags `latest`.
+- Pushes images to GHCR at `ghcr.io/<your-org>/expense-system-backend:<tag>` and `ghcr.io/<your-org>/expense-system-frontend:<tag>`.
+- Optionally mirrors images to Docker Hub if `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` repository secrets are set.
+
+This creates an atomic, tagged image for every release and keeps `latest` updated for convenience.
+
 ## Production notes
 
 - The backend reads `DATABASE_URL` env var. Set it to a Postgres or MySQL DSN for production.
@@ -134,6 +144,7 @@ kubectl get svc expense-frontend
 I added a GitHub Actions workflow `.github/workflows/deploy-cloudrun.yml` that will build and push container images to Google Container Registry (GCR) and deploy them to Cloud Run when you push to `main`.
 
 Required repository secrets (set these in GitHub Settings -> Secrets):
+
 - `GCP_SA_KEY`: JSON service account key with roles `roles/run.admin`, `roles/storage.admin`, `roles/iam.serviceAccountUser` (base64 or raw JSON)
 - `GCP_PROJECT`: your GCP project id
 - `GCP_REGION`: Cloud Run region (e.g. `us-central1`)
