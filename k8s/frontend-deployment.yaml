@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: ghcr.io/REPLACE_OWNER/expense-system-frontend:latest
+          image: ghcr.io/Harshit-ops-code/expense-system-frontend:latest
           ports:
             - containerPort: 80

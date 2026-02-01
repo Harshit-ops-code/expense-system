@@ -17,7 +17,7 @@ spec:
       containers:
         - name: backend
           # Replace IMAGE with your registry image (GHCR / Docker Hub)
-          image: ghcr.io/REPLACE_OWNER/expense-system-backend:latest
+          image: ghcr.io/Harshit-ops-code/expense-system-backend:latest
           ports:
             - containerPort: 5000
           env:
